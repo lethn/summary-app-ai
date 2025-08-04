@@ -1,12 +1,14 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 
 export default function ConversationDetails({ params }) {
     const { userId, conversationId } = use(params);
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const router = useRouter();
 
     const fetchConversation = async () => {
         try {
@@ -28,7 +30,16 @@ export default function ConversationDetails({ params }) {
 
     return (
         <div className="flex flex-col justify-center items-center">
-            <h1 className="text-2xl font-bold m-4">Conversation Details</h1>
+            <div className="w-1/2 mt-4 mb-2">
+                <button
+                    onClick={() => router.back()}
+                    className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800 cursor-pointer mb-2"
+                >
+                    Back
+                </button>
+                <h1 className="text-2xl font-bold text-center">Conversation Details</h1>
+            </div>
+
             <div className="w-1/2 p-3 border rounded">
                 <h2 className="text-lg font-bold mb-2">Title: {data.title}</h2>
                 <h2 className="text-lg font-bold mb-2">Summary:</h2>
@@ -37,6 +48,6 @@ export default function ConversationDetails({ params }) {
                 <p>{data.originalText}</p>
             </div>
         </div>
-        
+
     );
 }

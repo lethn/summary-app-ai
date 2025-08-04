@@ -14,14 +14,14 @@ export default function NavBar() {
                 <div className="flex gap-4">
                     <li>
                         <Link href="/">
-                            <button className="px-4 py-2 hover:bg-gray-800 rounded transition">
+                            <button className="px-4 py-2 hover:bg-gray-800 rounded transition cursor-pointer">
                                 Home
                             </button>
                         </Link>
                     </li>
                     <li>
                         <Link href="/conversation-list">
-                            <button className="px-4 py-2 hover:bg-gray-800 rounded transition">
+                            <button className="px-4 py-2 hover:bg-gray-800 rounded transition cursor-pointer">
                                 Conversation List
                             </button>
                         </Link>

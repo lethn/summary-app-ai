@@ -7,11 +7,12 @@ export default function Home() {
     const [text, setText] = useState('');
     const [summary, setSummary] = useState('');
     const [title, setTitle] = useState('');
+    const [submittedText, setSubmittedText] = useState('');
 
     const handleSummarize = async () => {
         if (!text.trim()) return;
 
-        const userId = "1";
+        const userId = "user1";
         const conversationId = uuidv4();
 
         try {
@@ -26,6 +27,7 @@ export default function Home() {
             const { summary, title } = response.data;
             setSummary(summary);
             setTitle(title);
+            setSubmittedText(text);
         } catch (error) {
             console.error("Error submitting conversation:", error);
             setSummary("Error occurred while generating summary.");
@@ -46,7 +48,7 @@ export default function Home() {
 
             <button
                 onClick={handleSummarize}
-                className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800"
+                className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800 cursor-pointer"
             >
                 Submit
             </button>
@@ -57,7 +59,7 @@ export default function Home() {
                     <h2 className="text-lg font-bold mb-2">Summary:</h2>
                     <p className='mb-2'>{summary}</p>
                     <h2 className="text-lg font-bold mb-2">Details:</h2>
-                    <p>{text}</p>
+                    <p>{submittedText}</p>
                 </div>
             )}
 

@@ -9,19 +9,14 @@ export default function ConversationList() {
     const [conversations, setConversations] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
-
-    const conversationsPerPage = 3;
-    const indexOfLastConversation = currentPage * conversationsPerPage;
-    const indexOfFirstConversation = indexOfLastConversation - conversationsPerPage;
-    const currentConversations = conversations.slice(indexOfFirstConversation, indexOfLastConversation);
-    const totalPages = Math.ceil(conversations.length / conversationsPerPage);
+    const [selectedUser, setSelectedUser] = useState("all");
 
     const router = useRouter();
 
     const fetchConversations = async () => {
         try {
-            const respone = await axios.get("http://localhost:8080/conversations");
-            setConversations(respone.data.items || []);
+            const response = await axios.get("http://localhost:8080/conversations");
+            setConversations(response.data.items || []);
         } catch (err) {
             console.error("Failed to fetch conversations:", err);
         } finally {
@@ -33,13 +28,38 @@ export default function ConversationList() {
         fetchConversations();
     }, []);
 
+    const filteredConversations = selectedUser === "all" ? conversations : conversations.filter((c) => c.userId.toString() === selectedUser);
+    const conversationsPerPage = 3;
+    const indexOfLastConversation = currentPage * conversationsPerPage;
+    const indexOfFirstConversation = indexOfLastConversation - conversationsPerPage;
+    const currentConversations = filteredConversations.slice(indexOfFirstConversation, indexOfLastConversation);
+    const totalPages = Math.ceil(filteredConversations.length / conversationsPerPage);
+
     if (isLoading) return <p className="text-center m-4">Loading conversations...</p>;
 
     return (
         <div className="p-4">
             <h1 className="text-2xl font-bold text-center mb-4">Conversation List</h1>
 
-            {conversations.length === 0 ? (
+            <div className="mb-6 flex justify-center items-center">
+                <select
+                    value={selectedUser}
+                    onChange={(e) => {
+                        setSelectedUser(e.target.value);
+                        setCurrentPage(1);
+                    }}
+                    className="p-2 rounded bg-gray-700 hover:bg-gray-800 text-white border"
+                >
+                    <option value="all">All Users</option>
+                    {[...new Set(conversations.map(c => c.userId))].map((userId) => (
+                        <option key={userId} value={userId}>
+                            {userId}
+                        </option>
+                    ))}
+                </select>
+            </div>
+
+            {filteredConversations.length === 0 ? (
                 <p className="text-center text-gray-500">No conversations found.</p>
             ) : (
                 <div className="space-y-4 max-w-4xl mx-auto">
