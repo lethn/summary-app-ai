@@ -2,7 +2,7 @@ const dotenv = require("dotenv");
 const express = require("express");
 const { GoogleGenAI } = require("@google/genai");
 const documentClient = require("./dynamodbClient");
-const { ScanCommand, PutCommand, QueryCommand, GetCommand } = require("@aws-sdk/lib-dynamodb");
+const { ScanCommand, PutCommand, QueryCommand, GetCommand, DeleteCommand } = require("@aws-sdk/lib-dynamodb");
 
 dotenv.config();
 
@@ -114,6 +114,30 @@ router.post("/new-conversation", async (req, res) => {
     } catch (error) {
         console.error("Error:", error);
         return res.status(500).json({ error: "Failed to process the conversation text" });
+    }
+});
+
+
+// Delete conversation
+router.delete("/conversations/:userId/:conversationId", async (req, res) => {
+    const { userId, conversationId } = req.params;
+
+    if (!userId || !conversationId) {
+        return res.status(400).json({ error: "Missing userId or conversationId" });
+    }
+
+    try {
+        const params = {
+            TableName: "conversations",
+            Key: { userId, conversationId },
+        };
+
+        await documentClient.send(new DeleteCommand(params));
+
+        return res.json({ message: "Conversation deleted successfully" });
+    } catch (err) {
+        console.error("Error deleting conversation:", err);
+        return res.status(500).json({ error: "Failed to delete conversation" });
     }
 });
 
